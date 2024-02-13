@@ -1,17 +1,9 @@
 // import { useState } from 'react'
-import './App.css'
-import Game from './pages/Game';
-import Container from 'react-bootstrap/container'
+import "./App.css";
+import Game from "./pages/Game";
 
 function App() {
-
-  return (
-    <>
-      <Container>
-        <Game />
-      </Container>
-    </>
-  )
+  return <Game />;
 }
 
-export default App
+export default App;
