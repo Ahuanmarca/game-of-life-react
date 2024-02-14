@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Board from "../components/Board";
 import { useState, useEffect } from "react";
 import randomizeCells from "../utils/randomizeCells.js";
@@ -7,6 +8,7 @@ import getResizedBoard from "../utils/getResizedBoard.js";
 function Game() {
   const [rows, setRows] = useState(20);
   const [cols, setCols] = useState(25);
+  const [paused, setPaused] = useState(false);
   const [cellsData, setCellsData] = useState(() => randomizeCells(rows, cols));
 
   // MAIN ACTION: Update board with each generation,
@@ -14,13 +16,13 @@ function Game() {
   useEffect(() => {
     const interval = setInterval(() => {
       const newGeneration = getNextGeneration(cellsData);
-      setCellsData(() => newGeneration);
+      ! paused && setCellsData(() => newGeneration);
     }, 1000);
     return () => clearInterval(interval);
-  }, [cellsData]);
+  }, [cellsData, paused]);
 
   function handleKeyPress(e) {
-    const key = e.key;
+    const key = e.code;
     switch (key) {
       case "ArrowUp":
         setRows(() => (rows + 1 <= 50 ? rows + 1 : 50));
@@ -34,6 +36,9 @@ function Game() {
       case "ArrowLeft":
         setCols(() => (cols - 1 >= 3 ? cols - 1 : 3));
         break;
+      case "Space":
+        setPaused(() => !paused);
+        break;
     }
   }
 
@@ -44,8 +49,14 @@ function Game() {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cellsData]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [paused]);
 
   // Define board state when changing size
   // - When growing, new cells state is randomized
@@ -53,8 +64,13 @@ function Game() {
   useEffect(() => {
     const resizedBoard = getResizedBoard(cellsData, rows, cols);
     setCellsData(() => resizedBoard);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, cols]);
+
+  useEffect(() => {
+    console.log({
+      rows, cols, paused
+    })
+  })
 
   return (
     <>
