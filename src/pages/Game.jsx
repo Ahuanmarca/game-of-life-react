@@ -16,7 +16,7 @@ function Game() {
   useEffect(() => {
     const interval = setInterval(() => {
       const newGeneration = getNextGeneration(cellsData);
-      ! paused && setCellsData(() => newGeneration);
+      !paused && setCellsData(() => newGeneration);
     }, 1000);
     return () => clearInterval(interval);
   }, [cellsData, paused]);
@@ -25,38 +25,38 @@ function Game() {
     const key = e.code;
     switch (key) {
       case "ArrowUp":
-        setRows(() => (rows + 1 <= 50 ? rows + 1 : 50));
+        setRows((prevRows) => (prevRows + 1 <= 50 ? prevRows + 1 : 50));
         break;
       case "ArrowDown":
-        setRows(() => (rows - 1 >= 3 ? rows - 1 : 3));
+        setRows((prevRows) => (prevRows - 1 >= 3 ? prevRows - 1 : 3));
         break;
       case "ArrowRight":
-        setCols(() => (cols + 1 <= 50 ? cols + 1 : 50));
+        setCols((prevCols) => (prevCols + 1 <= 50 ? prevCols + 1 : 50));
         break;
       case "ArrowLeft":
-        setCols(() => (cols - 1 >= 3 ? cols - 1 : 3));
+        setCols((prevCols) => (prevCols - 1 >= 3 ? prevCols - 1 : 3));
         break;
       case "Space":
-        setPaused(() => !paused);
+        setPaused((prevPaused) => !prevPaused);
         break;
     }
   }
 
-  // Resize board with Up, Down, Left and Right arrows
-  // TODO (?): Implement this without direct DOM manipulation
+  // Resize board
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [cellsData]);
+  }, []);
 
+  // Pause / Unpause game
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [paused]);
+  }, []);
 
   // Define board state when changing size
   // - When growing, new cells state is randomized
@@ -68,9 +68,11 @@ function Game() {
 
   useEffect(() => {
     console.log({
-      rows, cols, paused
-    })
-  })
+      rows,
+      cols,
+      paused,
+    });
+  });
 
   return (
     <>
